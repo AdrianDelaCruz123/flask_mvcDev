@@ -15,7 +15,7 @@ class LibroForm(FlaskForm):
 
     resumen = TextAreaField(
         "Resumen",
-        validators=[Length(min=5, max=1000)]
+       # validators=[Length(min=5, max=1000)]
     )
 
     submit = SubmitField("Guardar")
