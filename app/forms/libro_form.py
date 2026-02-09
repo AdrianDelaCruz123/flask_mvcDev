@@ -20,6 +20,7 @@ class LibroForm(FlaskForm):
         "Resumen",
         # uso textarea porque el resumen ocupa mas espacio y pido un minimo de 5 letras
         validators=[Length(min=5, max=1000)]
+
     )
 
     # el boton para guardar todo lo que han escrito
