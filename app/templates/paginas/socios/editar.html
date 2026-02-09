@@ -1,0 +1,24 @@
+
+{% extends "base.html" %}
+
+{% block title %}Editar Socio{% endblock %}
+
+{% block content %}
+<h2>Editar Socio: {{ socio.nombre }}</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <p>
+        <label>Nombre:</label><br>
+        {{ form.nombre(size=30) }}
+    </p>
+    
+    <p>
+        <label>Email:</label><br>
+        {{ form.email(size=30) }}
+    </p>
+    
+    <button type="submit">Guardar Cambios</button>
+<a href="{{ url_for('socios.listar') }}" class="btn btn-secondary">Cancelar</a></form>
+{% endblock %}

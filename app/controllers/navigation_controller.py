@@ -1,10 +1,8 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for
-from app.forms.libro_form import LibroForm
-from app.models import libro
-from app.models.libro import Libro
-from app.services import libros_service
-from app.services.libros_service import crear_libro, editar_libro, listar_libros
+from flask import Blueprint, render_template
+from flask_login import current_user
 
+
+# creo el blueprint navigation que se encarga de las rutas generales
 navigation_bp = Blueprint(
     "navigation",
     __name__,
@@ -12,6 +10,6 @@ navigation_bp = Blueprint(
 )
 
 @navigation_bp.route("/")
-def inicio():
+def home():
+    # esta funcion solo renderiza la pagina de inicio
     return render_template("paginas/inicio.html")
-

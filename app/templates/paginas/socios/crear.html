@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Socio{% endblock %}
+
+{% block content %}
+<h2>Nuevo Socio</h2>
+
+{% for field, errors in form.errors.items() %}
+    <div style="color: red;">
+        Error en {{ field }}: {{ ', '.join(errors) }}
+    </div>
+{% endfor %}
+
+<form method="POST" action="{{ url_for('socios.crear') }}" novalidate>
+    {{ form.hidden_tag() }}
+    
+    <p>
+        <label>Nombre:</label><br>
+        {{ form.nombre(size=30) }}
+    </p>
+    
+    <p>
+        <label>Email:</label><br>
+        {{ form.email(size=30) }}
+    </p>
+    
+    <button type="submit">Guardar</button>
+<a href="{{ url_for('socios.listar') }}" class="btn btn-secondary">Cancelar</a></form>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Socios{% endblock %}
+
+{% block content %}
+
+<div>
+    <h2>Listado de Socios</h2>
+    
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('socios.crear') }}">
+            + Nuevo Socio
+        </a>
+    {% endif %}
+</div>
+
+<hr>
+
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Libro Prestado</th> <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for socio in socios %}
+        <tr>
+            <td>{{ socio.id }}</td>
+            <td>{{ socio.nombre }}</td>
+            <td>{{ socio.email }}</td>
+            
+            <td>
+                {% if socio.libro_prestado %}
+                    <strong>Tiene:</strong> {{ socio.libro_prestado.titulo }}
+                {% else %}
+                    -- Libre --
+                {% endif %}
+            </td>
+            
+            <td>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('socios.editar', id=socio.id) }}">Editar</a>
+                    
+                    &nbsp;|&nbsp;
+
+                    {% if not socio.libro_prestado %}
+                        <form action="{{ url_for('socios.eliminar', id=socio.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" onclick="return confirm('¿Borrar a {{ socio.nombre }}?');">Borrar</button>
+                        </form>
+                    {% else %}
+                        <span>(No se puede borrar - tiene libro)</span>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" align="center">
+                No hay socios registrados.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

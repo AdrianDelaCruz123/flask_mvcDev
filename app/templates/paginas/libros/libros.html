@@ -3,14 +3,105 @@
 {% block title %}Libros{% endblock %}
 
 {% block content %}
-<h1>Libros</h1>
 
-<ul>
-    {% for libro in libros %}
-        <li>Titulo: <a href="/libros/{{ libro.id }}">{{ libro.titulo }}</a> Autor: {{ libro.autor }}</li>
-        
-    {% endfor %}
-</ul>
+<div>
+    <h2>Catálogo de Libros</h2>
+    
+    <div>
+        <form action="{{ url_for('libros.listar') }}" method="GET">
+            <input type="text" name="busqueda" placeholder="Buscar libro..." value="{{ request.args.get('busqueda', '') }}">
+            <button type="submit">Buscar</button>
+            
+            {% if request.args.get('busqueda') %}
+                <a href="{{ url_for('libros.listar') }}">Limpiar filtro</a>
+            {% endif %}
+        </form>
 
-<button onclick="location.href='{{ url_for('libros.crear') }}'">Crear nuevo libro</button>
-    {% endblock %}
+        <br>
+
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('libros.crear') }}">
+                + Nuevo Libro
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<hr>
+
+<div>
+    <table border="1" cellpadding="10" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Estado / Acción</th>
+                <th>Gestión</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for libro in libros %}
+            <tr>
+                <td>{{ libro.id }}</td>
+                <td>{{ libro.titulo }}</td>
+                <td>{{ libro.autor }}</td>
+                
+                <td>
+                    {% if libro.socio_id %}
+                        <strong>Estado:</strong> Prestado
+                        <br>
+                        
+                        {% if current_user.is_authenticated %}
+                            <form action="{{ url_for('prestamos.devolver', libro_id=libro.id) }}" method="POST">
+                                <button type="submit" onclick="return confirm('¿Confirmar devolución?');">
+                                    Devolver Libro
+                                </button>
+                            </form>
+                        {% endif %}
+
+                    {% else %}
+                        <strong>Estado:</strong> Libre
+                        <br>
+
+                        {% if current_user.is_authenticated %}
+                            <form action="{{ url_for('prestamos.prestar', libro_id=libro.id) }}" method="POST">
+                                <select name="socio_id" required>
+                                    <option value="" disabled selected>-- Elegir Socio --</option>
+                                    {% for socio in socios %}
+                                        <option value="{{ socio.id }}">{{ socio.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Prestar</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('libros.editar', id=libro.id) }}">Editar</a>
+                        
+                        &nbsp;|&nbsp; 
+
+                        {% if not libro.socio_id %}
+                            <form action="{{ url_for('libros.eliminar', id=libro.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" onclick="return confirm('¿Borrar este libro permanentemente?');">Borrar</button>
+                            </form>
+                        {% else %}
+                            <span>(No se puede borrar)</span>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" align="center">
+                    No hay libros registrados en el catálogo.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
