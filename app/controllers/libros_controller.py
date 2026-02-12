@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from app.forms.libro_form import LibroForm
+from app.forms.libro_busqueda_form import LibroBusquedaForm 
 from app.services.libros_service import listar_libros, crear_libro, editar_libro, eliminar_libro, obtener_libro
 from app.services.socios_service import listar_socios 
 from app.utils.decorators import admin_required 
@@ -9,12 +10,22 @@ libros_bp = Blueprint('libros', __name__, url_prefix='/libros')
 
 @libros_bp.route('/')
 def listar():
-    busqueda = request.args.get('busqueda')
+    # Inicializamos el formulario con los argumentos de la URL 
+    form_busqueda = LibroBusquedaForm(request.args)
+    
+    # Extraemos el valor para pasarlo al servicio
+    busqueda = request.args.get('busqueda', '') 
+    
     libros = listar_libros(busqueda) 
     socios = listar_socios()
-    return render_template('paginas/libros/libros.html', libros=libros, socios=socios)
-
+    
+    # Pasamos form_busqueda a la plantilla
+    return render_template('paginas/libros/libros.html', 
+                           libros=libros, 
+                           socios=socios, 
+                           form_busqueda=form_busqueda)
 @libros_bp.route('/crear', methods=['GET', 'POST'])
+
 @login_required
 @admin_required 
 def crear():

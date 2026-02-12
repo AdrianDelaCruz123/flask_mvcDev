@@ -8,12 +8,13 @@
     <h2>Catálogo de Libros</h2>
     
     <div>
-        <form action="{{ url_for('libros.listar') }}" method="GET">
-            <input type="text" name="busqueda" placeholder="Buscar libro..." value="{{ request.args.get('busqueda', '') }}">
-            <button type="submit">Buscar</button>
-            
+        <form method="GET" action="{{ url_for('libros.listar') }}">
+            {{ form_busqueda.busqueda.label }}
+            {{ form_busqueda.busqueda(placeholder="Título, autor...") }}
+            {{ form_busqueda.submit() }}
+
             {% if request.args.get('busqueda') %}
-                <a href="{{ url_for('libros.listar') }}">Limpiar filtro</a>
+                <a href="{{ url_for('libros.listar') }}" style="margin-left: 10px;">Limpiar filtro</a>
             {% endif %}
         </form>
 
@@ -21,7 +22,7 @@
 
         {% if current_user.is_authenticated %}
             <a href="{{ url_for('libros.crear') }}">
-                + Nuevo Libro
+                <strong>+ Nuevo Libro</strong>
             </a>
         {% endif %}
     </div>
