@@ -1,29 +1,30 @@
-<form method="post" novalidate>
+<form method="POST">
     {{ form.hidden_tag() }}
+    
+    <p>
+        {{ form.titulo.label }}<br>
+        {{ form.titulo() }}
+    </p>
+
+    <p>
+        {{ form.autor.label }}<br>
+        {{ form.autor() }}
+    </p>
+
+    <p>
+        {{ form.genero.label }}<br>
+        {{ form.genero() }}
+    </p>
+
+    <p>
+        {{ form.anio_publicacion.label }}<br>
+        {{ form.anio_publicacion() }}
+    </p>
+
+    <br>
 
     <div>
-        <label for="{{ form.titulo.id }}">{{ form.titulo.label }}</label>
-        {{ form.titulo }}
-        {% for error in form.titulo.errors %}
-            <p role="alert">{{ error }}</p>
-        {% endfor %}
+        {{ form.submit() }}
+        <a href="{{ url_for('libros.listar') }}">Cancelar</a>
     </div>
-
-    <div>
-        <label for="{{ form.autor.id }}">{{ form.autor.label }}</label>
-        {{ form.autor }}
-        {% for error in form.autor.errors %}
-            <p role="alert">{{ error }}</p>
-        {% endfor %}
-    </div>
-
-    <div>
-        <label for="{{ form.resumen.id }}">{{ form.resumen.label }}</label>
-        {{ form.resumen }}
-        {% for error in form.resumen.errors %}
-            <p role="alert">{{ error }}</p>
-        {% endfor %}
-    </div>
-
-    {{ form.submit }}
 </form>

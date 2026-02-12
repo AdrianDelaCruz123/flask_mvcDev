@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, IntegerField, SubmitField
+from wtforms.validators import DataRequired, Length, NumberRange
 
 # defino la clase del formulario heredando de flaskform para que sea mas facil
 class LibroForm(FlaskForm):
@@ -13,14 +13,21 @@ class LibroForm(FlaskForm):
     autor = StringField(
         "Autor",
         # el autor tambien tiene que estar relleno si o si
-        validators=[DataRequired(), Length(max=100)]
+        validators=[DataRequired(message="El autor es obligatorio"), Length(max=100)]
     )
 
-    resumen = TextAreaField(
-        "Resumen",
-        # uso textarea porque el resumen ocupa mas espacio y pido un minimo de 5 letras
-        validators=[Length(min=5, max=1000)]
+    genero = StringField(
+        "Género",
+        validators=[DataRequired(message="El género es obligatorio"), Length(max=50)]
+    )
 
+    anio_publicacion = IntegerField(
+        "Año de Publicación",
+        validators=[
+            DataRequired(message="El año es obligatorio"),
+            # validamos que sea un año positivo 
+            NumberRange(min=0, max=2100, message="Introduce un año válido")
+        ]
     )
 
     # el boton para guardar todo lo que han escrito

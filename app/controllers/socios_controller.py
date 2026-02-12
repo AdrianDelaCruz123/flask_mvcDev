@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.forms.socio_form import SocioForm
+from app.models.socio import Socio
 from app.services.socios_service import (
     listar_socios, 
     buscar_socios_por_nombre_email, 
@@ -17,43 +18,49 @@ socios_bp = Blueprint('socios', __name__, url_prefix='/socios')
 @socios_bp.route('/')
 def listar():
     busqueda = request.args.get('busqueda')
-    
-    # si el usuario ha escrito algo en el buscador filtro la lista
-    if busqueda:
+    solo_prestamos = request.args.get('solo_prestamos') 
+
+    if solo_prestamos:
+        socios = [s for s in listar_socios() if s.libro_prestado]
+    elif busqueda:
         socios = buscar_socios_por_nombre_email(busqueda)
     else:
-        # si no hay busqueda traigo todos los socios que existen
         socios = listar_socios()
         
     return render_template('paginas/socios/socios.html', socios=socios)
-
 @socios_bp.route('/crear', methods=['GET', 'POST'])
-@admin_required # uso este decorador para que solo el admin pueda crear gente
+@admin_required
 def crear():
     form = SocioForm()
-    # si el formulario esta bien relleno guardo el nuevo socio
     if form.validate_on_submit():
+        existente = Socio.query.filter_by(email=form.email.data).first()
+        if existente:
+            flash(f'El email {form.email.data} ya está registrado.', 'danger')
+            return render_template('paginas/socios/crear.html', form=form, titulo="Nuevo Socio")
+
         crear_socio(form.nombre.data, form.email.data)
         flash('Socio creado correctamente', 'success')
         return redirect(url_for('socios.listar'))
         
-    return render_template('paginas/socios/crear.html', form=form)
+    return render_template('paginas/socios/crear.html', form=form, titulo="Nuevo Socio")
 
 @socios_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @admin_required
 def editar(id):
-    # busco al socio por su id para saber a quien vamos a editar
     socio = obtener_socio(id)
-    # cargo el formulario con los datos que ya tiene el socio
     form = SocioForm(obj=socio)
     
     if form.validate_on_submit():
-        # si cambian datos y guardan actualizo la base de datos
+        otro_con_mismo_email = Socio.query.filter(Socio.email == form.email.data, Socio.id != id).first()
+        if otro_con_mismo_email:
+            flash('Error: Ese email ya pertenece a otro socio.', 'danger')
+            return render_template('paginas/socios/crear.html', form=form, titulo="Editar Socio")
+
         actualizar_socio(id, form.nombre.data, form.email.data)
         flash('Socio actualizado correctamente', 'success')
         return redirect(url_for('socios.listar'))
         
-    return render_template('paginas/socios/editar.html', form=form, socio=socio)
+    return render_template('paginas/socios/crear.html', form=form, titulo="Editar Socio")
 
 @socios_bp.route('/eliminar/<int:id>', methods=['POST'])
 @admin_required
@@ -63,7 +70,7 @@ def eliminar(id):
     
     # esto es importante si tiene libros prestados no dejo borrarlo
     if libros_pendientes > 0:
-        flash(f'Error: No puedes borrar al socio porque tiene {libros_pendientes} libros sin devolver.', 'danger')
+        flash(f'Error: No puedes borrar al socio porque tiene {libros_pendientes} libro(s) sin devolver.', 'danger')
     else:
         # si no debe nada entonces si lo elimino del sistema
         eliminar_socio(id)

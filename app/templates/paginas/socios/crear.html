@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Crear Socio{% endblock %}
+{% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h2>Nuevo Socio</h2>
+<h2>{{ titulo }}</h2>
 
 {% for field, errors in form.errors.items() %}
     <div style="color: red;">
@@ -11,7 +11,7 @@
     </div>
 {% endfor %}
 
-<form method="POST" action="{{ url_for('socios.crear') }}" novalidate>
+<form method="POST" novalidate>
     {{ form.hidden_tag() }}
     
     <p>
@@ -25,5 +25,6 @@
     </p>
     
     <button type="submit">Guardar</button>
-<a href="{{ url_for('socios.listar') }}" class="btn btn-secondary">Cancelar</a></form>
+    <a href="{{ url_for('socios.listar') }}">Cancelar</a>
+</form>
 {% endblock %}

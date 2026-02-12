@@ -3,18 +3,12 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">{{ titulo }}</h3>
-                </div>
-                <div class="card-body">
-                    {% include 'componentes/libro_form.html' %}
-                </div>
-            </div>
-        </div>
+<div>
+    <h2>{{ titulo }}</h2>
+    <hr>
+    
+    <div>
+        {% include 'componentes/libro_form.html' %}
     </div>
 </div>
 {% endblock %}

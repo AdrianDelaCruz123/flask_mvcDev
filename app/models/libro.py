@@ -8,7 +8,8 @@ class Libro(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(100), nullable=False) 
     autor = db.Column(db.String(100), nullable=False)
-    resumen = db.Column(db.Text, nullable=True)
+    genero = db.Column(db.String(50), nullable=True)
+    anio_publicacion = db.Column(db.Integer, nullable=True)
     
     # clave foranea que conecta con la tabla socios para saber quien tiene el libro prestado
     socio_id = db.Column(db.Integer, db.ForeignKey('socios.id'), nullable=True)
@@ -29,7 +30,9 @@ class Libro(db.Model):
             "codigo": self.codigo,
             "titulo": self.titulo,
             "autor": self.autor,
-            "resumen": self.resumen,
+            # actualizamos tambien el diccionario
+            "genero": self.genero,
+            "anio_publicacion": self.anio_publicacion,
             "socio_id": self.socio_id,
             # calculo automatico si no tiene socio id es que esta disponible
             "disponible": self.socio_id is None 
